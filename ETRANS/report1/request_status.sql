@@ -7,7 +7,7 @@ SELECT de.month_year,
   'none' status_code,
   'request' AS status_desc,
   'N' reqt_cnt_status,
-  reqt_all,
+  reqt_all REQT_CNT, 
   reqt_all * 100 / reqt_all reqt_pert
 FROM
   (SELECT month_year,
@@ -27,7 +27,7 @@ FROM
   ) de
 INNER JOIN mst_dept md
 ON de.dept_id = md.dept_id;
--- sum year
+-- sum offid 99 with yearly
 SELECT de.month_year,
   de.dept_id,
   md.dept_name,
@@ -46,7 +46,7 @@ FROM
     tr.off_id,
     COUNT(*) reqt_all
   FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
+    (SELECT TRUNC(created_date, 'year') month_year,
       dept_id,
       off_id
     FROM token_request
@@ -59,7 +59,7 @@ FROM
 INNER JOIN mst_dept md
 ON de.dept_id = md.dept_id;
 
--- depart sum office 999999
+-- depart sum office 999999 monthly and yearly
 SELECT
     de.month_year,
     de.dept_id,
@@ -102,7 +102,7 @@ FROM
     (SELECT month_year,
     COUNT(*) reqt_all
   FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
+    (SELECT TRUNC(created_date, 'year') month_year,
       dept_id
     FROM token_request
       --                    where  trunc(created_date, 'mon') =
