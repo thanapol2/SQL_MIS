@@ -16,8 +16,8 @@ BEGIN
     ) LOOP
         INSERT INTO temp_r1 (
             month_year,
-            dept_id,
-            dept_name,
+            region_no,
+            region_name,
             off_id,
             off_name,
             status_code,
@@ -30,7 +30,7 @@ BEGIN
         )
             SELECT
                 month_year,
-                cal.dept_id,
+                cal.region_no,
                 md.dept_name,
                 off_id,
                 'none' off_name,
@@ -44,7 +44,7 @@ BEGIN
             FROM
                 (
                     SELECT
-                        dept_id,
+                        region_no,
                         off_id,
                         status_desc,
                         'A' reqt_cnt_status,
@@ -57,11 +57,11 @@ BEGIN
 --                        AND tr.status_desc = 'request'
                         AND tr.reqt_cnt_status = 'N'
                     GROUP BY
-                        dept_id,
+                        region_no,
                         off_id,
                         status_desc
                 ) cal
-                INNER JOIN mst_dept md ON cal.dept_id = md.dept_id
+                INNER JOIN mst_dept md ON cal.region_no = md.dept_id
                 cross join (
                     SELECT
                         r.month_year   month_year
@@ -70,19 +70,4 @@ BEGIN
                 ) mn;
 
     END LOOP;
-     FOR r IN (
-        WITH t AS (
-            SELECT
-                DATE '2018-01-01' start_date,
-                SYSDATE   end_date
-            FROM
-                dual
-        )
-        SELECT
-            add_months(trunc(start_date, 'mm'), level - 1) month_year
-        FROM
-            t
-        CONNECT BY
-            trunc(end_date, 'mm') >= add_months(trunc(start_date, 'mm'), level - 1)
-    )
 END;

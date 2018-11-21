@@ -2,7 +2,7 @@ BEGIN
     FOR r IN (
         SELECT
             month_year,
-            dept_id,
+            region_no,
             off_id,
             SUM(reqt_cnt) reqt_all
         FROM
@@ -12,7 +12,7 @@ BEGIN
             AND status_desc = 'request'
         GROUP BY
             month_year,
-            dept_id,
+            region_no,
             off_id
     ) LOOP
         UPDATE temp_r1 t
@@ -20,7 +20,7 @@ BEGIN
             reqt_pert = reqt_cnt * 100 / r.reqt_all
         WHERE
             t.month_year = r.month_year
-            AND t.dept_id = r.dept_id
+            AND t.region_no = r.region_no
             AND t.off_id = r.off_id
             AND t.reqt_cnt_status = 'A';
 

@@ -1,6 +1,6 @@
 SELECT de.month_year,
-  de.dept_id,
-  md.dept_name,
+  de.dept_id as region_no,
+  md.dept_name as region_name,
   de.off_id,
   'none' off_name,
   'none' status_code,
@@ -46,8 +46,8 @@ ON de.dept_id = md.dept_id;
 
 -- sum offid 99 with yearly
 SELECT de.month_year,
-  de.dept_id,
-  md.dept_name,
+  de.dept_id as region_no,
+  md.dept_name as region_name,
   de.off_id
   || 99 off_id,
   'รวม '
@@ -96,8 +96,8 @@ ON de.dept_id = md.dept_id;
 -- depart sum office 999999 by month
 SELECT
     de.month_year,
-    de.dept_id,
-    md.dept_name,
+    de.dept_id as region_no,
+    md.dept_name as region_name,
     '999999' off_id,
     'รวมสรรพสามิตพื้นที่ ภาคที่ '|| de.dept_id off_name,
     'none' status_code,
@@ -136,8 +136,8 @@ FROM
 -- sum all
 SELECT
     de.month_year,
-    '99' dept_id,
-    'ทั่วประเทศ' dept_name,
+    '99' region_no,
+    'ทั่วประเทศ' region_name,
     '999999' off_id,
     'ทั่วประเทศ' off_name,
     'none' status_code,
