@@ -23,7 +23,7 @@ FROM t
         CERT_CNT_STATUS,
         CERT_CNT,
         CERT_PERT,
-        CREATE_DTME,
+        CREATE_DTM,
         CREATE_USER_ID
       )
     SELECT month_year,
@@ -49,7 +49,7 @@ FROM t
         SUM(CERT_CNT) CERT_CNT,
         NULL CERT_pert
       FROM temp_r2 tr
-      WHERE tr.month_year   <= to_date('01/11/2018','dd/mm/yyyy')
+      WHERE tr.month_year   <= r.month_year
       AND tr.CERT_CNT_STATUS = 'N'
       GROUP BY region_no,
         off_id,
@@ -63,7 +63,7 @@ FROM t
     INNER JOIN CErt_reason_status cr
     ON cal.CERT_REASON_STATUS_CD = cr.CERT_REASON_STATUS_CD
     CROSS JOIN
-      ( SELECT to_date('01/11/2018','dd/mm/yyyy') month_year FROM dual
+      ( SELECT r.month_year month_year FROM dual
       ) mn;
   END LOOP;
 END;

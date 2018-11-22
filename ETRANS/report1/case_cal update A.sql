@@ -17,7 +17,7 @@ BEGIN
     ) LOOP
         UPDATE temp_r1 t
         SET
-            reqt_pert = reqt_cnt * 100 / r.reqt_all
+            reqt_pert = round(reqt_cnt * 100 / r.reqt_all,2)
         WHERE
             t.month_year = r.month_year
             AND t.region_no = r.region_no

@@ -5,7 +5,7 @@ BEGIN
     off_id,
     SUM(cert_cnt) cert_all
   FROM temp_r2
-  WHERE cert_cnt_status ='N'
+  WHERE cert_cnt_status ='A'
   GROUP BY month_year,
     region_no,
     off_id
@@ -16,6 +16,6 @@ BEGIN
     WHERE t.month_year    = r.month_year
     AND t.region_no         = r.region_no
     AND t.off_id          = r.off_id
-    AND t.cert_cnt_status ='N';
+    AND t.cert_cnt_status ='A';
   END LOOP;
 END;
