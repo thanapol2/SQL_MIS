@@ -5,6 +5,7 @@ BEGIN
             region_no,
             caldr_year,
             month_id,
+            REQT_CNT_STATUS,
             nullif(reqt_cnt, 0) reqt_all
         FROM
             rept_req_cert_status
