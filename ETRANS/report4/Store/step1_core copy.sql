@@ -1,117 +1,130 @@
---- core
- select 
- TO_CHAR(d.month_year, 'yyyy') + 543 AS caldr_year,
-            trunc(add_months(d.month_year, 6516), 'yyyy') AS start_date,
-            trunc(add_months(d.month_year, 6528), 'yyyy') - 1 AS end_date,
-            trunc(SYSDATE) update_date,
-            TO_CHAR(d.month_year, 'Q') AS quater_id,
-            'ไตรมาสที่ '
-            || TO_CHAR(d.month_year, 'Q') AS quater_short_name,
-            'ปี '
-            || TO_CHAR(TO_CHAR(d.month_year, 'yyyy') + 543)
-            || ' ไตรมาสที่ '
-            || TO_CHAR(d.month_year, 'Q') AS quater_long_name,
-            TO_CHAR(d.month_year, 'MM') AS month_id,
-            TO_CHAR(d.month_year, 'MON') AS month_short_name,
-            TO_CHAR(d.month_year, 'MONTH') AS month_long_name,;
-  d.region_no,
-  d.region_name,
-  3 MANAGE_TYPE_CD,
-  'คัดค้นเอกสารสำคัญ' MANAGE_TYPE_DESC,
-  idt.IMP_DOC_TYPE_CD,
-  dc.doc_type AS IMP_DOC_TYPE_DESC,
-  dc.IMP_DOC_CUR_YEAR_CNT,
-  '0' IMP_DOC_CUR_YEAR_PERT,
-  NVL(do.IMP_DOC_PRIOR_YEAR_CNT,0) IMP_DOC_PRIOR_YEAR_CNT,
-  '0' IMP_DOC_PRIOR_YEAR_PERT,
-  sysdate CREATE_DTM,
-  'RAW' CREATE_USER_ID       
-FROM
-  (SELECT dc.month_year,
-    ap.dept_id,
-    dc.doc_type,
-    COUNT(*) IMP_DOC_CUR_YEAR_CNT
-  FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
-      USERNAME,
-      DOC_TYPE
-    FROM doc_hist
-    WHERE TRUNC(created_date, 'year') = to_date('01/01/2018','dd/mm/yyyy')
-    AND PRINT_STATUS                  = '1'
-    ) dc
-  INNER JOIN app_user ap
-  ON dc.USERNAME = ap.USERNAME
-  GROUP BY dc.month_year,
-    ap.dept_id,
-    dc.doc_type
-  ) d
-INNER JOIN Imp_doc_type idt
-ON idt.IMP_DOC_TYPE_DESC = dc.DOC_TYPE
-LEFT JOIN
-  (SELECT dc.month_year,
-    ap.dept_id,
-    dc.doc_type,
-    COUNT(*) IMP_DOC_PRIOR_YEAR_CNT
-  FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
-      USERNAME,
-      DOC_TYPE
-    FROM doc_hist
-    WHERE TRUNC(created_date, 'year') = to_date('01/01/2017','dd/mm/yyyy')
-    AND PRINT_STATUS                  = '1'
-    ) dc
-  INNER JOIN app_user ap
-  ON dc.USERNAME = ap.USERNAME
-  GROUP BY dc.month_year,
-    ap.dept_id,
-    dc.doc_type
-  ) DO ON dc.dept_id=do.dept_id
-AND dc.doc_type     =do.doc_type;
-
--- 99
---- core
-SELECT dc.month_year,
-  99 region_no,
-  'ทั่วประเทศ' region_name,
-  3 MANAGE_TYPE_CD,
-  'คัดค้นเอกสารสำคัญ' MANAGE_TYPE_DESC,
-  idt.IMP_DOC_TYPE_CD,
-  dc.doc_type AS IMP_DOC_TYPE_DESC,
-  dc.IMP_DOC_CUR_YEAR_CNT,
-  '0' IMP_DOC_CUR_YEAR_PERT,
-  NVL(do.IMP_DOC_PRIOR_YEAR_CNT,0) IMP_DOC_PRIOR_YEAR_CNT,
-  '0' IMP_DOC_PRIOR_YEAR_PERT,
-  sysdate CREATE_DTM,
-  'ETL Batch' CREATE_USER_ID
-FROM
-  (SELECT dc.month_year,
-    dc.doc_type,
-    COUNT(*) IMP_DOC_CUR_YEAR_CNT
-  FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
-      USERNAME,
-      DOC_TYPE
-    FROM doc_hist
-    WHERE TRUNC(created_date, 'year') = to_date('01/01/2018','dd/mm/yyyy')
-    AND PRINT_STATUS                  = '1'
-    ) dc
-  GROUP BY dc.month_year,
-    dc.doc_type
-  ) dc
-INNER JOIN Imp_doc_type idt
-ON idt.IMP_DOC_TYPE_DESC = dc.DOC_TYPE
-LEFT JOIN
-  (SELECT dc.month_year,
-    dc.doc_type,
-    COUNT(*) IMP_DOC_PRIOR_YEAR_CNT
-  FROM
-    (SELECT TRUNC(created_date, 'mon') month_year,
-      USERNAME,
-      DOC_TYPE
-    FROM doc_hist
-    WHERE TRUNC(created_date, 'year') = to_date('01/01/2017','dd/mm/yyyy')
-    AND PRINT_STATUS                  = '1'
-    ) dc
-  GROUP BY dc.month_year,
-    dc.doc_type
-  ) DO ON  dc.doc_type     =do.doc_type;
+INSERT INTO rept_imp_trans_doc (
+    caldr_year,
+    start_date,
+    end_date,
+    update_date,
+    quater_id,
+    quater_short_name,
+    quater_long_name,
+    month_id,
+    month_short_name,
+    month_long_name,
+    region_no,
+    region_name,
+    manage_type_cd,
+    manage_type_desc,
+    imp_doc_type_cd,
+    imp_doc_type_desc,
+    imp_doc_cur_year_cnt,
+    imp_doc_cur_year_pert,
+    imp_doc_prior_year_cnt,
+    imp_doc_prior_year_pert,
+    create_dtm,
+    create_user_id
+)
+    SELECT
+        TO_CHAR(core.month_year, 'yyyy') + 543 AS caldr_year,
+        trunc(add_months(core.month_year, 6516), 'yyyy') AS start_date,
+        trunc(add_months(core.month_year, 6528), 'yyyy') - 1 AS end_date,
+        trunc(SYSDATE) update_date,
+        TO_CHAR(core.month_year, 'Q') AS quater_id,
+        'ไตรมาสที่ '
+        || TO_CHAR(core.month_year, 'Q') AS quater_short_name,
+        'ปี '
+        || TO_CHAR(TO_CHAR(core.month_year, 'yyyy') + 543)
+        || ' ไตรมาสที่ '
+        || TO_CHAR(core.month_year, 'Q') AS quater_long_name,
+        TO_CHAR(core.month_year, 'MM') AS month_id,
+        TO_CHAR(core.month_year, 'MON') AS month_short_name,
+        TO_CHAR(core.month_year, 'MONTH') AS month_long_name,
+        core.region_no,
+        core.region_name,
+        core.manage_type_cd,
+        core.manage_type_desc,
+        core.imp_doc_type_cd,
+        core.imp_doc_type_desc,
+        nvl(cur.imp_doc_cur_year_cnt, 0) AS imp_doc_cur_year_cnt,
+        NULL AS imp_doc_cur_year_pert,
+        nvl(pr.imp_doc_prior_year_cnt, 0) AS imp_doc_prior_year_cnt,
+        NULL AS imp_doc_prior_year_pert,
+        SYSDATE   AS create_dtm,
+        'RAW' AS create_user_id
+    FROM
+        (
+            SELECT
+                r.region_no,
+                r.region_name,
+                t.month_year,
+                m.manage_type_cd,
+                m.manage_type_desc,
+                im.imp_doc_type_cd,
+                im.imp_doc_type_desc
+            FROM
+                region_mas r
+                CROSS JOIN (
+                    SELECT
+                        trunc(TO_DATE('01/07/2018', 'dd/mm/yyyy'), 'mm') month_year
+                    FROM
+                        dual
+                ) t
+                CROSS JOIN manage_type m
+                CROSS JOIN imp_doc_type im
+        ) core
+        LEFT JOIN (
+            SELECT
+                dc.month_year,
+                f.region_no,
+                3 AS manage_type_cd,
+                dc.doc_type,
+                COUNT(*) imp_doc_cur_year_cnt
+            FROM
+                (
+                    SELECT
+                        trunc(created_date, 'mm') month_year,
+                        username,
+                        doc_type
+                    FROM
+                        doc_hist
+                    WHERE
+                        trunc(created_date, 'mm') = TO_DATE('01/07/2018', 'dd/mm/yyyy')
+                        AND print_status = '1'
+                ) dc
+                INNER JOIN app_user ap ON dc.username = ap.username
+                INNER JOIN region_off f ON ap.off_id = f.off_id
+            GROUP BY
+                dc.month_year,
+                f.region_no,
+                dc.doc_type
+        ) cur ON cur.month_year = core.month_year
+                 AND cur.region_no = core.region_no
+                 AND cur.doc_type = core.imp_doc_type_desc
+                 AND cur.manage_type_cd = core.manage_type_cd
+        LEFT JOIN (
+            SELECT
+                dc.month_year,
+                f.region_no,
+                3 AS manage_type_cd,
+                dc.doc_type,
+                COUNT(*) imp_doc_prior_year_cnt
+            FROM
+                (
+                    SELECT
+                        trunc(created_date, 'mm') month_year,
+                        username,
+                        doc_type
+                    FROM
+                        doc_hist
+                    WHERE
+                        trunc(created_date, 'mm') = add_months(TO_DATE('01/07/2018', 'dd/mm/yyyy'), - 12)
+                        AND print_status = '1'
+                ) dc
+                INNER JOIN app_user ap ON dc.username = ap.username
+                INNER JOIN region_off f ON ap.off_id = f.off_id
+            GROUP BY
+                dc.month_year,
+                f.region_no,
+                dc.doc_type
+        ) pr ON pr.month_year = core.month_year
+                AND pr.region_no = core.region_no
+                AND pr.doc_type = core.imp_doc_type_desc
+                AND pr.manage_type_cd = core.manage_type_cd;
