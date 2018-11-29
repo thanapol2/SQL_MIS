@@ -8,6 +8,7 @@ BEGIN
     nullif(SUM(cert_cnt),0) cert_all
   FROM REPT_MANAGE_CERT_STATUS
   WHERE caldr_year = TO_CHAR(SYSDATE, 'yyyy') + 543
+  and month_id != 13
   GROUP BY off_id,
     region_no,
     caldr_year,

@@ -10,10 +10,8 @@ BEGIN
             rept_extend_cert_status
         WHERE
             cert_extend_cd = 0
-            AND month_id != 13
-                AND TO_DATE('01/' || month_id
-                                     || '/'
-                                        || caldr_year, 'dd/mm/yyyy') = TO_DATE('01/02/2562', 'dd/mm/yyyy')
+            AND month_id in (2,13)
+                AND caldr_year = 2562
     ) LOOP
         UPDATE rept_extend_cert_status t
         SET
@@ -24,7 +22,7 @@ BEGIN
                 AND t.region_no = r.region_no
                     AND cert_extend_cd NOT IN (
                 0,
-                99
+                999
             );
 
     END LOOP;

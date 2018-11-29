@@ -89,6 +89,7 @@ FROM t
       FROM rept_req_cert_status tr
       WHERE caldr_year       = TO_CHAR(r.month_year, 'yyyy') + 543
       AND month_id          <= TO_CHAR(TRUNC(r.month_year), 'mm')
+      AND month_id          != 13
       AND tr.reqt_cnt_status = 'N'
       GROUP BY caldr_year,
         region_no,
