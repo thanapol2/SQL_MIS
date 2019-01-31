@@ -41,7 +41,7 @@ SELECT
     'ทั่วประเทศ' as region_name,
     999999 AS off_id,
     'ทั่วประเทศ' AS off_name,
-    s.cert_status_cd,
+    s.cert_status_cd||'99' as cert_status_cd,
     s.cert_status,
     null as CERT_REASON_STATUS_CD,
     null as CERT_REASON_STATUS,
