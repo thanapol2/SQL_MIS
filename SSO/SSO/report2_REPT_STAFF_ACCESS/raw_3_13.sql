@@ -1,7 +1,8 @@
-CREATE OR REPLACE PROCEDURE rept_staff_access1 (
+create or replace PROCEDURE rept_staff_access1 (
     date_start IN   DATE
 ) AS
 BEGIN
+    
     INSERT INTO rept_staff_access (
         caldr_year,
         start_date,
@@ -80,7 +81,7 @@ BEGIN
                                         FROM
                                             sso.tran_log
                                         WHERE
-                                            trunc(tran_log, 'mon') = date_start
+                                            trunc(TRAN_DATE, 'mon') = date_start
                                     )
                                 GROUP BY
                                     tran_date
@@ -92,7 +93,7 @@ BEGIN
                                 FROM
                                     sso.tran_log
                                 WHERE
-                                    trunc(tran_log, 'mon') = date_start
+                                    trunc(TRAN_DATE, 'mon') = date_start
                                 GROUP BY
                                     tran_date
                             ) ac ON ac.tran_date = cu.tran_date

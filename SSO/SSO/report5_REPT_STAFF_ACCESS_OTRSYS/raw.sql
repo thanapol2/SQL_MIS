@@ -1,40 +1,86 @@
-SELECT
+create or replace PROCEDURE rept_staff_otrsys_1 (
+    date_start IN   DATE
+) AS
+BEGIN
+    INSERT INTO rept_staff_access_otrsys (
+        caldr_year,
+        start_date,
+        end_date,
+        update_date,
+        quater_id,
+        quater_short_name,
+        quater_long_name,
+        month_id,
+        month_short_name,
+        month_long_name,
+        region_no,
+        region_name,
+        dept_code,
+        dept_desc,
+        access_user_status_code,
+        access_user_status,
+        userid_staff_cnt,
+        status_by_dept_pert,
+        create_dtm,
+        create_user_id
+    )
+        SELECT
 --    d.month_year,
-    TO_CHAR(d.tran_date, 'yyyy') + 543 AS caldr_year,
-    trunc(add_months(d.tran_date, 6516), 'yyyy') AS start_date,
-    trunc(add_months(d.tran_date, 6528), 'yyyy') - 1 AS end_date,
-    trunc(SYSDATE) update_date,
-    TO_CHAR(d.tran_date, 'Q') AS quater_id,
-    'ไตรมาสที่ '
-    || TO_CHAR(d.tran_date, 'Q') AS quater_short_name,
-    'ปี '
-    || TO_CHAR(TO_CHAR(d.tran_date, 'yyyy') + 543)
-    || ' ไตรมาสที่ '
-    || TO_CHAR(d.tran_date, 'Q') AS quater_long_name,
-    TO_CHAR(d.tran_date, 'MM') AS month_id,
-    TO_CHAR(d.tran_date, 'MON') AS month_short_name,
-    TO_CHAR(d.tran_date, 'MONTH') AS month_long_name,
-    '' AS region_no,
-    '' AS region_name,
-    '' as dept_code,
-    dept_desc,
-    '' AS ACCESS_USER_STATUS_CODE,
-    '' as ACCESS_USER_STATUS,
-    access_user_type,
-    USERID_STAFF_CNT,
-    rank,
-    SYSDATE   AS create_dtm,
-    'RAW' AS create_user_id
-FROM
-    (
-select all.month_year,
-all.dept,
-(d.USERID_STAFF_CNT/all.USERID_STAFF_CNT_all)*100 as STATUS_BY_DEPT_PERT
-from
-(select trunc(sysdate,'mm') month_year,dept,count(*) USERID_STAFF_CNT_all
-from sso.ed_regis
-group by dept,activateflag ) all
-inner join (select trunc(sysdate,'mm') month_year,dept,activateflag,count(*) USERID_STAFF_CNT
-from sso.ed_regis
-group by dept,activateflag) d
-on all.dept = d.dept)d
+            TO_CHAR(d.month_year, 'yyyy') + 543 AS caldr_year,
+            trunc(add_months(d.month_year, 6516), 'yyyy') AS start_date,
+            trunc(add_months(d.month_year, 6528), 'yyyy') - 1 AS end_date,
+            trunc(SYSDATE) update_date,
+            TO_CHAR(d.month_year, 'Q') AS quater_id,
+            'ไตรมาสที่ '
+            || TO_CHAR(d.month_year, 'Q') AS quater_short_name,
+            'ปี '
+            || TO_CHAR(TO_CHAR(d.month_year, 'yyyy') + 543)
+            || ' ไตรมาสที่ '
+            || TO_CHAR(d.month_year, 'Q') AS quater_long_name,
+            TO_CHAR(d.month_year, 'MM') AS month_id,
+            TO_CHAR(d.month_year, 'MON') AS month_short_name,
+            TO_CHAR(d.month_year, 'MONTH') AS month_long_name,
+            '' AS region_no,
+            '' AS region_name,
+            '' AS dept_code,
+            dept_desc,
+            access_user_status_code,
+            '' AS access_user_status,
+            userid_staff_cnt,
+            status_by_dept_pert,
+            SYSDATE   AS create_dtm,
+            'RAW' AS create_user_id
+        FROM
+            (
+                SELECT
+                    core.month_year,
+                    core.dept        dept_desc,
+                    d.activateflag   AS access_user_status_code,
+                    userid_staff_cnt,
+                    ( d.userid_staff_cnt / core.userid_staff_cnt_all ) * 100 AS status_by_dept_pert
+                FROM
+                    (
+                        SELECT
+                            trunc(SYSDATE, 'mm') month_year,
+                            dept,
+                            COUNT(*) userid_staff_cnt_all
+                        FROM
+                            sso.ed_regis
+                        GROUP BY
+                            dept
+                    ) core
+                    INNER JOIN (
+                        SELECT
+                            trunc(SYSDATE, 'mm') month_year,
+                            dept,
+                            activateflag,
+                            COUNT(*) userid_staff_cnt
+                        FROM
+                            sso.ed_regis
+                        GROUP BY
+                            dept,
+                            activateflag
+                    ) d ON core.dept = d.dept
+            ) d;
+
+END;
