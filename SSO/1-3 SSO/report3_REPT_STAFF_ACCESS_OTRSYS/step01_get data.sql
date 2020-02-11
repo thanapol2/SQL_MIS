@@ -65,7 +65,7 @@ BEGIN
                             dept,
                             COUNT(*) userid_staff_cnt_all
                         FROM
-                            sso.ed_regis
+                            sso_ed_regis
                         GROUP BY
                             dept
                     ) core
@@ -76,7 +76,7 @@ BEGIN
                             activateflag,
                             COUNT(*) userid_staff_cnt
                         FROM
-                            sso.ed_regis
+                            sso_ed_regis
                         GROUP BY
                             dept,
                             activateflag
